@@ -12,5 +12,8 @@ public class SingleTargetSkill extends Skill {
         // TODO: Single-target Bridge action
         // 1) Resolve final damage through effect implementor
         // 2) Apply to target node
+        int damage = resolvedDamage();
+        target.takeDamage(damage);
+        System.out.println(" [" + getEffectName() + "] " + getSkillName() + " (AOE) hits " + target.getName() + " for " + damage + " total damage.");
     }
 }
