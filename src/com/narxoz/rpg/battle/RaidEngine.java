@@ -35,15 +35,45 @@ public class RaidEngine {
         while (teamA.isAlive() && teamB.isAlive() && round < MAX_ROUNDS) {
             round++;
             result.addLine("-Round " + round + " -");
+            if (teamA.isAlive()) {
+                boolean crit = random.nextInt(100) < 10;
+                result.addLine(teamA.getName() + " casts " + teamASkill.getSkillName() + (crit ? " [CRITICAL]" : "") + " on " + teamB.getName());
+                int hpBefore = teamB.getHealth();
+                teamASkill.cast(teamB);
+                if (crit) {
+                    int bonus = teamASkill.getBasePower() / 2;
+                    teamB.takeDamage(bonus);
+                }
+                result.addLine("  " + teamB.getName() + " HP: " + hpBefore + " -> " + teamB.getHealth());
+            }
+            if (teamB.isAlive()) {
+                boolean crit = random.nextInt(100) < 10;
+                result.addLine(teamB.getName() + " casts " + teamBSkill.getSkillName() + (crit ? " [CRITICAL]" : "") + " on " + teamA.getName());
+                int hpBefore = teamA.getHealth();
+                teamBSkill.cast(teamA);
+                if (crit) {
+                    int bonus = teamBSkill.getBasePower() / 2;
+                    teamA.takeDamage(bonus);
+                }
+                result.addLine("  "  + teamA.getName() + " HP: " + hpBefore + " -> " + teamA.getHealth());
+            }
+
         }
         // 4) Stop when one team is defeated (or max rounds reached)
         //
         // Optional extension:
         // Use random for critical strikes or other deterministic events.
         // Example: boolean critA = random.nextInt(100) < 10;
-        result.setRounds(0);
-        result.setWinner("TBD");
-        result.addLine("TODO: implement raid simulation");
+        result.setRounds(round);
+        if (!teamA.isAlive() && !teamB.isAlive()) {
+            result.setWinner("Draw");
+        } else if (!teamB.isAlive()) {
+            result.setWinner(teamA.getName());
+        } else if (!teamA.isAlive()) {
+            result.setWinner(teamB.getName());
+        } else {
+            result.setWinner("Draw (max rounds reached)");
+        }
         return result;
     }
 }
